@@ -1,0 +1,52 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "8000:5000"
+    volumes:
+      - .:/code
+    environment:
+      FLASK_ENV: development
+  redis:
+    image: "redis:alpine"
+  mysql:
+        image: mysql:5.7.13
+        ports: 
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: myDb
+            MYSQL_USER: user
+            MYSQL_PASSWORD: test
+            MYSQL_ROOT_PASSWORD: test
+        volumes:
+            - ./dump:/docker-entrypoint-initdb.d
+  postgress_sql:
+        image: postgres:latest
+        ports:
+            - "5432"
+        volumes:
+            - ./ .database/postgres/data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: myDb
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: test
+  phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links: 
+            - mysql:db
+        ports:
+            - 8001:80
+        environment:
+            MYSQL_USER: user
+            MYSQL_PASSWORD: test
+            MYSQL_ROOT_PASSWORD: test
+  pgadmin:
+        image: dpage/pgadmin4:5.7
+        environment:
+            PGADMIN_DEFAULT_EMAIL: "nenado@laba.com"
+            PGADMIN_DEFAULT_PASSWORD: "1234"
+        volumes:
+            - ./pgadmin:/var/lib/pgadmin
+        ports:
+            - 5050:80
